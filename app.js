@@ -2,6 +2,8 @@ const express = require("express");
 const https = require("https");
 const bodyParser = require("body-parser");
 const moment = require('moment');
+const NewsAPI = require('newsapi');
+const newsapi = new NewsAPI('ed6ce68e40764bd69d3903dcdb86fc28');
 
 const app = express();
 
@@ -268,12 +270,30 @@ app.get("/", function(req,res){
   res.render('index');
 });
 
+
+
 ///////POST/////////
 
 app.post("/", function(req, res){
   const query = req.body.countryInput; 
   const url = `https://covid19-api.org/api/status/${query}`;
-  const prediction = `https://covid19-api.org/api/prediction/${query}`
+  const prediction = `https://covid19-api.org/api/prediction/${query}`;
+
+  ///////NEWS APP/////////
+
+  newsapi.v2.topHeadlines({
+    q: 'covid-19',
+    language: 'en',
+    country: `${query}`
+  }).then(response => {
+    console.log(response);
+    /*
+      {
+        status: "ok",
+        articles: [...]
+      }
+    */
+  });
 
   https.get(url, function(response){
     console.log(response.statusCode);
@@ -306,8 +326,10 @@ app.post("/", function(req, res){
     
         response.on("data", function(data){
           const predictionData = JSON.parse(data);
+
           
           res.render('cases', {country, covidData, date, cases, deaths, recovered, predictionData, moment:moment });
+
         }); 
       }); 
     });
