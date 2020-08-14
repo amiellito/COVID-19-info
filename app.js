@@ -1,6 +1,7 @@
 const express = require("express");
 const https = require("https");
 const bodyParser = require("body-parser");
+const moment = require('moment');
 
 const app = express();
 
@@ -8,7 +9,7 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
 
-var isoCountries = {
+const isoCountries = {
   'AF' : 'Afghanistan',
   'AX' : 'Aland Islands',
   'AL' : 'Albania',
@@ -258,6 +259,11 @@ var isoCountries = {
 
 ///////ROUTES/////////
 
+exports.index = function(req, res) {
+  // send moment to your ejs
+  res.render('cases', { moment: moment });
+}
+
 app.get("/", function(req,res){
   res.render('index');
 });
@@ -267,6 +273,7 @@ app.get("/", function(req,res){
 app.post("/", function(req, res){
   const query = req.body.countryInput; 
   const url = `https://covid19-api.org/api/status/${query}`;
+  const prediction = `https://covid19-api.org/api/prediction/${query}`
 
   https.get(url, function(response){
     console.log(response.statusCode);
@@ -280,17 +287,31 @@ app.post("/", function(req, res){
       const recovered = covidData.recovered;
       const country = getCountryName(isoCountry);
 
+      //Format Date//
+
+      var date = moment(lastUpdate).format('LL');
+
+      //Format Country Name//
+
       function getCountryName (countryCode) {
         if (isoCountries.hasOwnProperty(countryCode)) {
             return isoCountries[countryCode];
         } else {
             return countryCode;
-        }
+        }  
     }
 
-      res.render('cases', {country, covidData, lastUpdate, cases, deaths, recovered});
-    })
-  });
+      https.get(prediction, function(response){
+        console.log(response.statusCode);
+    
+        response.on("data", function(data){
+          const predictionData = JSON.parse(data);
+          
+          res.render('cases', {country, covidData, date, cases, deaths, recovered, predictionData, moment:moment });
+        }); 
+      }); 
+    });
+  });  
 });
 
 

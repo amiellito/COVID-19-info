@@ -6,11 +6,30 @@
   </head>
   <body>
 
-    <h1><%=country%></h1>
-    <p>last update: <%=lastUpdate%></p>
-    <p>cases: <%=cases%></p>
-    <p>deaths: <%=deaths%></p>
-    <p>recovered: <%=recovered%></p>
+<section>
+      <h1><%=country%></h1>
+      <p>last update: <%=date%></p>
+      <p>cases: <%=cases%></p>
+      <p>deaths: <%=deaths%></p>
+      <p>recovered: <%=recovered%></p>
+  
+      <!-- // ITERATE THROUGH ARRAY OF OBJECTS FROM PARSED DATA //-->
+  
+      <h2>Projected Trajectory</h2>
+  
+      <ul>
+        <% predictionData.forEach(function(predictions){ %>
+          <li>Predicted cases by <%=moment(predictions.date).format('LL')%> : <strong><%=predictions.cases%></strong> </li>
+        <% }) %>
+      </ul>
+</section>
+
+
+
+<section>
+    <!-- // NEWS API? //-->
+</section>
+    
   
   </body>
 </html>
