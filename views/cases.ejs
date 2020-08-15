@@ -16,7 +16,7 @@
           <div class="row">
             <div class="col-sm-8 col-md-7 py-4">
               <h4 class="text-white">About</h4>
-              <p class="text-muted">A COVID-19 information site build with Node Express.</p>
+              <p class="text-muted">A COVID-19 information site build with Node Express. Lorem ipsum dolor, sit amet consectetur adipisicing elit. Adipisci dolorem dolorum hic odit. Illum quas mollitia, optio temporibus amet assumenda?</p>
             </div>
             <div class="col-sm-4 offset-md-1 py-4">
               <h4 class="text-white">Contact</h4>
@@ -178,6 +178,7 @@
       <section class="cover-container d-flex w-50 h-100 p-3 mx-auto flex-column text-center mt-5">
 
         <h2 class="display-4">Projected Trajectory</h2>
+        <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Natus sunt veritatis alias illum, exercitationem repellat soluta voluptates obcaecati consequuntur voluptas maiores.</p>
 
         <hr class="mb-5" width="200px">
 
@@ -193,7 +194,6 @@
                   async function chartIT(){
                     await getData(); 
                     const ctx = document.getElementById('myChart').getContext('2d');
-                    console.log(xlabels, chartData)
                     const myChart = new Chart(ctx, {
                         type: 'line',
                         data: {
@@ -214,8 +214,11 @@
                       const data = await response.json();
                       
                       Object.values(data).forEach(val => {
+                        
                         xlabels.push(val.date)
                         chartData.push(val.cases)
+
+                        console.log(val.date)
                       }) 
                     }
 

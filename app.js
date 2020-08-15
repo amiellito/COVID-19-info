@@ -309,22 +309,7 @@ app.post("/", function(req, res){
         console.log(response.statusCode);
     
         response.on("data", function(data){
-          const predictionData = JSON.parse(data);
-
-          var dateArr = [];
-          var caseArr = [];
-
-
-          (function(){
-            for (let i = 0; i < predictionData.length; i++){
-              dateArr.push(moment(predictionData[i].date).format('l'));
-              caseArr.push(predictionData[i].cases);
-            }
-            console.log(caseArr);
-            
-          })();
           
-
           ///////NEWS APP/////////
 
           newsapi.v2.topHeadlines({
@@ -334,7 +319,7 @@ app.post("/", function(req, res){
           }).then(newsData => {
             const news = newsData.articles;
           
-            res.render('cases', {country, covidData, date, dateArr, cases, caseArr, deaths, recovered, predictionData, moment:moment, news, query});
+            res.render('cases', {country, covidData, date, cases, deaths, recovered,  moment:moment, news, query});
           });
         }); 
       }); 
