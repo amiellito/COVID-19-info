@@ -3,3 +3,20 @@
   height: 100%;
   object-fit: cover;
 }
+
+li{
+  list-style: none;
+  margin-bottom: 5px;
+}
+
+.darkRed{
+  color: darkred;
+}
+
+.darkCyan{
+  color: darkcyan;
+}
+
+.darkOlive{
+  color: darkolivegreen;
+}

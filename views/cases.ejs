@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
     <title>Covid Tracker App</title>
@@ -31,7 +32,7 @@
       <div class="navbar navbar-dark bg-dark shadow-sm">
         <div class="container d-flex justify-content-between">
           <a href="/" class="navbar-brand d-flex align-items-center">
-                  <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="50px" height="50px" x="0px" y="0px"
+                  <svg class="p-2" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="50px" height="50px" x="0px" y="0px"
                     width="600px" height="600px" viewBox="0 0 600 600" enable-background="new 0 0 600 600" xml:space="preserve">
                     <path id="color_x5F_1" fill="#EA2F3A" d="M337.804,424.2c2.225,5.558-4.144,13.336-14.226,17.373
                     c-10.082,4.037-20.059,2.805-22.285-2.753c-2.225-5.558,4.144-13.336,14.226-17.373C325.601,417.409,335.579,418.642,337.804,424.2z
@@ -139,48 +140,114 @@
       </div>
     </header>
 
-      <section>
-            <h1><%=country%></h1>
+      <section class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column text-center pt-5 bg-light">
+            <h3 class="display-4"><%=country%></h3>
             <p>last update: <%=date%></p>
-            <p>cases: <%=cases%></p>
-            <p>deaths: <%=deaths%></p>
-            <p>recovered: <%=recovered%></p>
+            <div class="d-flex flex-column justify-content-around">
+
+              <form class="mb-4" action="/">
+                <button class="btn btn-lg btn-secondary" type="submit"><i class="fas fa-redo-alt"></i>Check a different country</button>
+              </form>
+
+              <hr class="mb-5" width="200px">
+              
+              <h4>cases: </h4>
+              <h1 class="darkCyan display-2"><%=cases%></h1>
+              
+            </div>
+            <div class="d-flex justify-content-around w-50 mx-auto">
+
+              <div class="d-flex flex-column justify-content-around">
+                <h4>deaths:</h4>
+                <h2 class="darkRed display-5"><%=deaths%></h2>
+
+              </div>
+
+              <div class="d-flex flex-column justify-content-around">
+                <h4>recovered: </h4>
+                <h2 class="darkOlive display-5"><%=recovered%></h2>
+              </div>
+            </div>
         
             <!-- // ITERATE THROUGH ARRAY OF OBJECTS FROM PARSED DATA //-->
         
-            <h2>Projected Trajectory</h2>
-        
-            <ul>
-              <% predictionData.forEach(function(predictions){ %>
-                <li><%=moment(predictions.date).format('LL')%> : <strong><%=predictions.cases%></strong> </li>
-              <% }) %>
-            </ul>
+            
       </section>
 
-      <form action="/">
-        <button class="btn btn-info" type="submit"><i class="fas fa-redo-alt"></i>Check a different country</button>
-      </form>
 
-      <section class="cover-container d-flex w-80 h-100 p-4 flex-column">
+      <section class="cover-container d-flex w-50 h-100 p-3 mx-auto flex-column text-center mt-5">
+
+        <h2 class="display-4">Projected Trajectory</h2>
+
+        <hr class="mb-5" width="200px">
+
+              <canvas id="myChart" width="200" height="200"></canvas>
+              <script>
+
+                  const xlabels = [];
+                  const chartData = [];
+
+                  chartIT();
+                     
+                    
+                  async function chartIT(){
+                    await getData(); 
+                    const ctx = document.getElementById('myChart').getContext('2d');
+                    console.log(xlabels, chartData)
+                    const myChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                        labels: xlabels,
+                        datasets: [{
+                            label: 'Projected Cases',
+                            data: chartData,
+                                borderWidth: 1
+                            }]
+                        },
+                    });
+                  };
+
+              
+
+                    async function getData(){
+                      const response = await fetch(`https://covid19-api.org/api/prediction/${`<%= query %>`}`);
+                      const data = await response.json();
+                      
+                      Object.values(data).forEach(val => {
+                        xlabels.push(val.date)
+                        chartData.push(val.cases)
+                      }) 
+                    }
+
+              
+
+              </script>
+
+
+
+        
+      </section>
+
+      <section class="cover-container d-flex w-80 h-100 p-4 flex-column  bg-light">
 
         
 
         <div class="cover-container d-flex w-80 h-100 p-4 flex-column mx-auto">
           
-          <h1 class="display-4 p-3 text-center">Covid News</h1>
+          <h1 class="display-4 p-3 text-center">Covid-19 News from <%=country%></h1>
 
           <hr class="mb-5" width="200px">
 
           <% news.forEach(newsItem => { %>
 
           <div class="col-md-9 mx-auto">
-            <div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+            <div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative  bg-white">
               <div class="col p-4 d-flex flex-column position-static">
                 <strong class="d-inline-block mb-2 text-primary"><%= newsItem.source.name%></strong>
                 <h3 class="mb-2"><%= newsItem.title%></h3>
                 <div class="mb-2 mt-2 text-muted"><%= moment(newsItem.publishedAt).format('LL')%> . <%= newsItem.author%></div>
                 <p class="mb-2 mt-2 card-text mb-auto"><%= newsItem.description%></p>
-                <a href="<%= newsItem.url%>" class="stretched-link mb-2 mt-2">Click to read more</a>
+                <a href="<%= newsItem.url%>" class="stretched-link mb-2 mt-2" target="_blank">Click to read more</a>
               </div>
               <div class="col-auto d-none d-lg-block">
 
@@ -197,7 +264,7 @@
 
         <footer class="mastfoot mt-auto text-center">
           <div class="inner">
-            <p>Cover template for <a href="https://getbootstrap.com/">Bootstrap</a>, by <a href="https://twitter.com/mdo">@mdo</a>.</p>
+            <p>Web development project, by <a href="https://www.linkedin.com/in/amiellapuebla/" target="_blank">Amiel L.</a></p>
           </div>
         </footer>
  
